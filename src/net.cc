@@ -613,6 +613,7 @@ ncclResult_t ncclNetInit(struct ncclComm* comm) {
     comm->ncclNet = ncclNets[i];
     ok = true;
 
+    // @yangzhou, CollNet is a new algorithm in NCCL that allows GPUs on multiple nodes to do in-network reductions. When NCCL_COLLNET_ENABLE is set to 1, NCCL will detect network plugins (libnccl-net.so) loaded through LD_LIBRARY_PATH and use the in-network reduction functionalities implemented therein. See repo here: https://github.com/Mellanox/nccl-rdma-sharp-plugins
     if (ncclCollNets[i]) {
       NCCLCHECK(collNetGetState(i, &state));
       if (state == ncclNetStateEnabled) {

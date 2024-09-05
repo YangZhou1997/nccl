@@ -1405,6 +1405,7 @@ static ncclResult_t ncclCommInitRankFunc(struct ncclAsyncJob* job_) {
     comm, comm->rank, comm->nRanks, comm->cudaDev, comm->nvmlDev, comm->busId, (unsigned long long)hashUniqueId(job->commId));
   }
 
+  // @yangzhou: this function will create proxy threads. 
   NCCLCHECKGOTO(initTransportsRank(comm, job->parent, timers), res, fail);
 
   NCCLCHECKGOTO(ncclTunerPluginLoad(comm), res, fail);
@@ -1758,6 +1759,7 @@ ncclResult_t ncclCommInitAll(ncclComm_t* comms, int ndev, const int* devlist) {
     // Ignore return codes .. we need to call ncclGroupEnd to clean up anyway
     ncclCommInitRankDev(comms+i, ndev, uniqueId, i, devlist ? devlist[i] : i, &config);
   }
+  // @yangzhou, this will execute all async ncclCommInitRankFunc() jobs (one job for each rank) internally, which will run initTransportsRank() to setup all types of transports and collective algorithms for data. 
   NCCLCHECKGOTO(ncclGroupEnd(), ret, fail);
 
 fail:
